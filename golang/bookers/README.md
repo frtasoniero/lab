@@ -1,13 +1,14 @@
 ### Requirements
 
-| package        | version   | web-page                                                     |
-|----------------|-----------|:------------------------------------------------------------:|
-| golang         | v1.24.1   | [🌐](https://go.dev/)                                        |
-| chi            | v5.2.1    | [🌐](https://github.com/go-chi/chi)                          |
-| air-verse/air  | v1.67.7   | [🌐](https://github.com/air-verse/air)                       |
-| direnv         | v.2.35    | [🌐](https://github.com/direnv/direnv?tab=readme-ov-file)    |
-| lib/pg         | v1.10.9   | [🌐](https://github.com/lib/pq)                              |
-| golang-migrate | v4.18.2   | [🌐](https://github.com/golang-migrate/migrate)              |
+| package        | version   | web-page                                                          |
+|----------------|-----------|:-----------------------------------------------------------------:|
+| Ubuntu         | 24.04     | [🌐](https://ubuntu.com/download)                                 |
+| Docker         | 27.5.1-rd | [🌐](https://docs.docker.com/desktop/setup/install/linux/ubuntu/) |
+| Docker-Compose | 2.33.0    | [🌐](https://docs.docker.com/desktop/setup/install/linux/ubuntu/) |
+| golang         | 1.24.1    | [🌐](https://go.dev/)                                             |
+| air-verse/air  | 1.67.7    | [🌐](https://github.com/air-verse/air)                            |
+| direnv         | 2.35.0    | [🌐](https://github.com/direnv/direnv?tab=readme-ov-file)         |
+| golang-migrate | 4.18.2    | [🌐](https://github.com/golang-migrate/migrate)                   |
 
 ### Migrations
 
