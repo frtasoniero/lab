@@ -1,25 +1,27 @@
 ### Requirements
 
->- Golang v1.24.1
->- Chi v5.2.1
->- Air v1.67.7
->- Direnv v.2.35.0
->- Pg v1.10.9
->- Golang-Migrate v4.18.2
+| package        | version   | web-page                                                     |
+|----------------|-----------|:------------------------------------------------------------:|
+| golang         | v1.24.1   | [🌐](https://go.dev/)                                        |
+| chi            | v5.2.1    | [🌐](https://github.com/go-chi/chi)                          |
+| air-verse/air  | v1.67.7   | [🌐](https://github.com/air-verse/air)                       |
+| direnv         | v.2.35    | [🌐](https://github.com/direnv/direnv?tab=readme-ov-file)    |
+| lib/pg         | v1.10.9   | [🌐](https://github.com/lib/pq)                              |
+| golang-migrate | v4.18.2   | [🌐](https://github.com/golang-migrate/migrate)              |
 
 ### Migrations
 
-CREATE USER
+- CREATE USER
 > ```
-> $ make migration create_user
-> ```
-
-MIGRATE UP
-> ```
-> $ make migrate-up
+> make migration create_user
 > ```
 
-MIGRATE DOWN
+- MIGRATE UP
 > ```
-> $ make migrate-down
+> make migrate-up
+> ```
+
+- MIGRATE DOWN
+> ```
+> make migrate-down
 > ```
