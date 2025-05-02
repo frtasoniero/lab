@@ -49,9 +49,22 @@ docker:
 ## Run with Docker Compose
 docker-up:
 	@echo "Starting Docker Compose..."
-	docker-compose -f $(DOCKER_COMPOSE) up --build
+	docker-compose -f $(DOCKER_COMPOSE) up --build -d
 
 ## Stop Docker Compose
 docker-down:
 	@echo "Stopping Docker Compose..."
-	docker-compose -f $(DOCKER_COMPOSE) down
+	docker-compose -f $(DOCKER_COMPOSE) down -d
+
+## Run only the app service (requires db already running)
+docker-app-up:
+	docker-compose -f $(DOCKER_COMPOSE) up --build app -d
+
+## Run only the database (MongoDB)
+docker-db-up:
+	docker-compose -f $(DOCKER_COMPOSE) up mongo -d
+
+# Seed the test database with mock users
+mock-db:
+	@echo "Populating auth_demo_test with mock users..."
+	go run ./cmd/seed/main.go

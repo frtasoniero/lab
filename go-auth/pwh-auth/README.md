@@ -16,6 +16,7 @@ A simple and secure user authentication service written in **Go**, using **passw
 - ✅ Password-based authentication with bcrypt
 - ✅ User registration and login endpoints
 - ✅ JSON API responses
+- ✅ Swagger endpoint documentation
 - ✅ MongoDB persistence
 - ✅ Docker + Makefile integration
 - ✅ `.env`-based configuration

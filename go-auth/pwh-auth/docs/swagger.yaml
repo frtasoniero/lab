@@ -1,0 +1,93 @@
+basePath: /
+definitions:
+  main.Credentials:
+    properties:
+      password:
+        example: secret123
+        type: string
+      username:
+        example: john_doe
+        type: string
+    type: object
+  main.JSONResponse:
+    properties:
+      message:
+        example: Login successful
+        type: string
+    type: object
+host: localhost:5005
+info:
+  contact:
+    name: Felipe R. Tasoniero
+    url: https://github.com/frtasoniero
+  description: This is a simple authentication API with MongoDB.
+  title: Go Auth Demo API
+  version: "1.0"
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: User credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/main.Credentials'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.JSONResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.JSONResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.JSONResponse'
+      summary: Login with credentials
+      tags:
+      - Auth
+  /register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: User credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/main.Credentials'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.JSONResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.JSONResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/main.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.JSONResponse'
+      summary: Register a new user
+      tags:
+      - Auth
+swagger: "2.0"

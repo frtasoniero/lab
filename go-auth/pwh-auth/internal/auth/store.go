@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/frtasoniero/lab/go-auth/pwt-auth/internal/db"
+	"github.com/frtasoniero/lab/go-auth/pwh-auth/internal/db"
 	"go.mongodb.org/mongo-driver/bson"
 )
 

@@ -1,16 +1,30 @@
 package main
 
+// @title Go Auth Demo API
+// @version 1.0
+// @description This is a simple authentication API with MongoDB.
+// @contact.name Felipe R. Tasoniero
+// @contact.url https://github.com/frtasoniero
+// @host localhost:5005
+// @BasePath /
+
 import (
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
-	"github.com/frtasoniero/lab/go-auth/pwt-auth/internal/auth"
-	"github.com/frtasoniero/lab/go-auth/pwt-auth/internal/db"
+	_ "github.com/frtasoniero/lab/go-auth/pwh-auth/docs"
+	"github.com/frtasoniero/lab/go-auth/pwh-auth/internal/auth"
+	"github.com/frtasoniero/lab/go-auth/pwh-auth/internal/db"
 	"github.com/joho/godotenv"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"go.mongodb.org/mongo-driver/mongo"
 )
+
+//go:generate swag init -g cmd/server/main.go
 
 func main() {
 	log.Println("Starting authentication service...")
@@ -23,7 +37,7 @@ func main() {
 	mongoURI := os.Getenv("MONGO_URI")
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080" // Default fallback
+		port = "5005" // Default fallback
 	}
 
 	if mongoURI == "" {
@@ -39,6 +53,7 @@ func main() {
 	// Register HTTP handlers for the endpoints
 	http.HandleFunc("/register", registerHandler)
 	http.HandleFunc("/login", loginHandler)
+	http.Handle("/swagger/", httpSwagger.WrapHandler)
 
 	// Start the HTTP server
 	log.Printf("Server listening on port %s\n", port)
@@ -48,14 +63,25 @@ func main() {
 }
 
 type Credentials struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username string `json:"username" example:"john_doe"`
+	Password string `json:"password" example:"secret123"`
 }
 
 type JSONResponse struct {
-	Message string `json:"message"`
+	Message string `json:"message" example:"Login successful"`
 }
 
+// registerHandler handles user registration
+// @Summary Register a new user
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param user body Credentials true "User credentials"
+// @Success 200 {object} JSONResponse
+// @Failure 400 {object} JSONResponse
+// @Failure 409 {object} JSONResponse
+// @Failure 500 {object} JSONResponse
+// @Router /register [post]
 func registerHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		respondJSON(w, http.StatusMethodNotAllowed, "Method not allowed")
@@ -74,6 +100,23 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	creds.Username = strings.ToLower(strings.TrimSpace(creds.Username))
+
+	// Check if user already exists
+	existingUser, err := auth.GetUserByUsername(creds.Username)
+	if err == nil && existingUser != nil {
+		respondJSON(w, http.StatusConflict, "User already exists")
+		return
+	}
+
+	// Optional: check if error is not "not found" — skip if you already handle it
+	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+		log.Println("Database error during lookup:", err)
+		respondJSON(w, http.StatusInternalServerError, "Server error")
+		return
+	}
+
+	// Hash password and save
 	hashedPassword, err := auth.HashPassword(creds.Password)
 	if err != nil {
 		log.Println("Error hashing password:", err)
@@ -81,26 +124,32 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := auth.User{
+	newUser := auth.User{
 		Username:     creds.Username,
 		PasswordHash: hashedPassword,
 	}
 
-	err = auth.SaveUser(user)
-	if err != nil {
-		if mongo.IsDuplicateKeyError(err) {
-			respondJSON(w, http.StatusConflict, "User already exists")
-		} else {
-			log.Println("Error saving user:", err)
-			respondJSON(w, http.StatusInternalServerError, "Registration failed")
-		}
+	if err := auth.SaveUser(newUser); err != nil {
+		log.Println("Saving user error:", err)
+		respondJSON(w, http.StatusInternalServerError, "Registration failed")
 		return
 	}
 
-	log.Printf("New user registered: %s", creds.Username)
+	log.Printf("Registered new user: %s", creds.Username)
 	respondJSON(w, http.StatusOK, "Registration successful")
 }
 
+// loginHandler handles user login
+// @Summary Login with credentials
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param user body Credentials true "User credentials"
+// @Success 200 {object} JSONResponse
+// @Failure 400 {object} JSONResponse
+// @Failure 401 {object} JSONResponse
+// @Failure 500 {object} JSONResponse
+// @Router /login [post]
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		respondJSON(w, http.StatusMethodNotAllowed, "Method not allowed")
@@ -118,6 +167,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		respondJSON(w, http.StatusBadRequest, "Username and password required")
 		return
 	}
+
+	creds.Username = strings.ToLower(strings.TrimSpace(creds.Username))
 
 	user, err := auth.GetUserByUsername(creds.Username)
 	if err != nil {
