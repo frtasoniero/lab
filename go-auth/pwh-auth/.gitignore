@@ -1,0 +1,40 @@
+# Binaries
+auth-demo
+*.exe
+*.out
+*.test
+
+# Go build cache
+*.log
+*.tmp
+*.bak
+
+# Go modules
+vendor/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Dependency directories
+bin/
+obj/
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+
+# Env files (sensitive data)
+.env
+
+# Docker
+docker-compose.override.yml
+
+# Logs
+*.log
+
+# Node modules (if using frontend later)
+node_modules/
+dist/
+build/
