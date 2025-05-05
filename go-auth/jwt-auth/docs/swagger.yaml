@@ -1,0 +1,170 @@
+basePath: /
+definitions:
+  dtos.APIError:
+    properties:
+      error:
+        type: string
+    type: object
+  dtos.Message:
+    properties:
+      message:
+        type: string
+    type: object
+  dtos.Task:
+    properties:
+      description:
+        example: This is an example task.
+        type: string
+      title:
+        example: New Task
+        type: string
+    required:
+    - title
+    type: object
+  dtos.Token:
+    properties:
+      token:
+        type: string
+    type: object
+  dtos.User:
+    properties:
+      email:
+        example: john.doe@example.com
+        type: string
+      password:
+        example: 12345a!
+        type: string
+    required:
+    - email
+    - password
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Authentication API with JWT
+  title: JWT Auth API
+  version: "1.0"
+paths:
+  /tasks:
+    post:
+      consumes:
+      - application/json
+      description: Register a new task on database
+      parameters:
+      - description: Task data
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.Task'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Task created
+          schema:
+            $ref: '#/definitions/dtos.Message'
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/dtos.APIError'
+        "409":
+          description: Task already exists
+          schema:
+            $ref: '#/definitions/dtos.APIError'
+      security:
+      - BearerAuth: []
+      summary: Create new task
+      tags:
+      - tasks
+  /tasks/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a task by its id from database
+      parameters:
+      - description: Task Id
+        example: '"6817d32b97e0903fae78beec"'
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Task by id
+          schema:
+            $ref: '#/definitions/dtos.Message'
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/dtos.APIError'
+      security:
+      - BearerAuth: []
+      summary: Get task by id
+      tags:
+      - tasks
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user on database
+      parameters:
+      - description: User data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created
+          schema:
+            $ref: '#/definitions/dtos.Message'
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/dtos.APIError'
+        "409":
+          description: User already exists
+          schema:
+            $ref: '#/definitions/dtos.APIError'
+      summary: Create a new user
+      tags:
+      - users
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Check if user's email and password are valid
+      parameters:
+      - description: User data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User login
+          schema:
+            $ref: '#/definitions/dtos.Token'
+        "400":
+          description: Erro while trying to login
+          schema:
+            $ref: '#/definitions/dtos.APIError'
+      summary: User login
+      tags:
+      - users
+securityDefinitions:
+  BearerAuth:
+    description: 'Value: Bearer abc... (Bearer+space+token)'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
