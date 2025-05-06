@@ -10,6 +10,83 @@
     "basePath": "/",
     "paths": {
         "/tasks": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get task pagination from the API",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tasks"
+                ],
+                "summary": "Get task pagination",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of records per page",
+                        "name": "limitPage",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search by which task property",
+                        "name": "searchField",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search by value of the task property",
+                        "name": "searchValue",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by which task property",
+                        "name": "sortField",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "ascending",
+                            "descending"
+                        ],
+                        "type": "string",
+                        "description": "Sorting",
+                        "name": "sortOrder",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Task list",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/pagination.PaginationResult-entities_Task"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.APIError"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -86,6 +163,57 @@
                         "name": "id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Task by id",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.Message"
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.APIError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Edit a task by its Id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tasks"
+                ],
+                "summary": "Edit task by Id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "\"60c72b2f9b1d8b57b8ed2123\"",
+                        "description": "Task Id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "User data",
+                        "name": "task",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.Task"
+                        }
                     }
                 ],
                 "responses": {
@@ -246,6 +374,53 @@
                 "password": {
                     "type": "string",
                     "example": "12345a!"
+                }
+            }
+        },
+        "entities.Task": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "string"
+                }
+            }
+        },
+        "pagination.PaginationResult-entities_Task": {
+            "type": "object",
+            "properties": {
+                "Err": {},
+                "hasNextPage": {
+                    "type": "boolean"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Task"
+                    }
+                },
+                "pageCurrent": {
+                    "type": "integer"
+                },
+                "totalItems": {
+                    "type": "integer"
+                },
+                "totalPages": {
+                    "type": "integer"
                 }
             }
         }
