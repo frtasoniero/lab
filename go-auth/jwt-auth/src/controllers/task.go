@@ -30,6 +30,7 @@ func NewTaskController(server *gin.Engine, repo *repositories.TaskRepository) {
 		routes.GET("/:id", controller.GetTaskById)
 		routes.GET("/", controller.GetTasks)
 		routes.PUT("/:id", controller.UptadeTask)
+		routes.DELETE("/:id", controller.DeleteTask)
 	}
 }
 
@@ -243,5 +244,42 @@ func (c *TaskController) UptadeTask(ginContext *gin.Context) {
 	}
 	ginContext.JSON(http.StatusOK, dtos.Message{
 		Message: "Task successfully updated.",
+	})
+}
+
+// @Security BearerAuth
+// @Tags tasks
+// @Router /tasks/{id} [delete]
+// @Summary Delete task by Id
+// @Description Delete a task by its Id
+// @Accept json
+// @Produce json
+// @Param id path string true "ID da Task" example("60c72b2f9b1d8b57b8ed2123")
+// @Success 200 {object} dtos.Message "Task by id"
+// @Failure 400 {object} dtos.APIError "Validation error"
+func (c *TaskController) DeleteTask(ginContext *gin.Context) {
+	id := ginContext.Param("id")
+	idObj, err := converts.StringToObject(id)
+	if err != nil {
+		ginContext.Error(err)
+		return
+	}
+	userId, err := utils.GetUserAuthenticated(ginContext)
+	if err != nil {
+		ginContext.Error(err)
+		return
+	}
+	params := dtos.DeleteFilter{
+		Id:              idObj,
+		ForeignKey:      "userId",
+		ForeignKeyValue: userId,
+	}
+	err = c.service.DeleteTask(params)
+	if err != nil {
+		ginContext.Error(err)
+		return
+	}
+	ginContext.JSON(http.StatusOK, dtos.Message{
+		Message: "Task deletado com sucesso.",
 	})
 }

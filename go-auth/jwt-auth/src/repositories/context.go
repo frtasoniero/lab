@@ -201,3 +201,21 @@ func (r *MongoRepositoryContext) Update(contextServer context.Context, params dt
 	}
 	return nil
 }
+
+func (r *MongoRepositoryContext) Delete(contextServer context.Context, params dtos.DeleteFilter) error {
+	filter := bson.M{"_id": params.Id}
+	if params.ForeignKey != "" && params.ForeignKeyValue != primitive.NilObjectID {
+		filter["$and"] = []bson.M{
+			{"_id": params.Id},
+			{params.ForeignKey: params.ForeignKeyValue},
+		}
+	}
+	result, err := r.Collection.DeleteOne(contextServer, filter)
+	if err != nil {
+		return utils.BadRequestError(fmt.Sprintf("erro ao deletar documento: %v", err))
+	}
+	if result.DeletedCount == 0 {
+		return utils.NotFoundError("Nenhum documento encontrado para deletar")
+	}
+	return nil
+}

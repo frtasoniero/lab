@@ -159,6 +159,33 @@ paths:
       tags:
       - tasks
   /tasks/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a task by its Id
+      parameters:
+      - description: ID da Task
+        example: '"60c72b2f9b1d8b57b8ed2123"'
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Task by id
+          schema:
+            $ref: '#/definitions/dtos.Message'
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/dtos.APIError'
+      security:
+      - BearerAuth: []
+      summary: Delete task by Id
+      tags:
+      - tasks
     get:
       consumes:
       - application/json

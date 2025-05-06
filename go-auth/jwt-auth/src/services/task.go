@@ -81,3 +81,12 @@ func (service *TaskService) UptadeTask(id, userId primitive.ObjectID, dto dtos.T
 	}
 	return nil
 }
+
+func (service *TaskService) DeleteTask(params dtos.DeleteFilter) error {
+	contextServer := utils.CreateContextServerWithTimeout()
+	err := service.repo.Delete(contextServer, params)
+	if err != nil {
+		return err
+	}
+	return nil
+}
