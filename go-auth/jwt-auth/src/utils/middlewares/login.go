@@ -5,13 +5,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/frtasoniero/lab/go-auth/jwt-auth/src/config"
 	"github.com/frtasoniero/lab/go-auth/jwt-auth/src/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
-
-var SecretKey = []byte("string-secret-to-password-at-least-256-bits-long")
 
 type Claims struct {
 	Email  string `json:"email"`
@@ -20,6 +19,8 @@ type Claims struct {
 }
 
 func GenerateToken(email string, userId primitive.ObjectID) (string, error) {
+	config.LoadEnv()
+
 	expirationTime := utils.TimeNowBrazil().Add(24 * time.Hour)
 
 	claims := &Claims{
@@ -31,7 +32,7 @@ func GenerateToken(email string, userId primitive.ObjectID) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(SecretKey)
+	tokenString, err := token.SignedString(config.SecretKey)
 	if err != nil {
 		return "", utils.BadRequestError("Error while generating token")
 	}
@@ -54,10 +55,11 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
+		config.LoadEnv()
 		tokenString = strings.TrimPrefix(tokenString, "Bearer ")
 		claims := &Claims{}
 		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-			return SecretKey, nil
+			return config.SecretKey, nil
 		})
 		if err != nil || !token.Valid {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid Token"})

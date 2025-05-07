@@ -5,6 +5,7 @@ import (
 
 	_ "github.com/frtasoniero/lab/go-auth/jwt-auth/docs"
 
+	"github.com/frtasoniero/lab/go-auth/jwt-auth/src/config"
 	"github.com/frtasoniero/lab/go-auth/jwt-auth/src/controllers"
 	"github.com/frtasoniero/lab/go-auth/jwt-auth/src/repositories"
 	"github.com/frtasoniero/lab/go-auth/jwt-auth/src/utils/middlewares"
@@ -24,6 +25,10 @@ var (
 // @host localhost:8080
 // @BasePath /
 func main() {
+	config.LoadEnv()
+
+	log.Println("DB:", config.MongoDB)
+	log.Println("URI:", config.MongoURI)
 
 	repoUser, errUser := repositories.NewUserRepository(uri, dbName, "users")
 	repoTask, errTask := repositories.NewTaskRepository(uri, dbName, "tasks")
@@ -34,6 +39,7 @@ func main() {
 	}
 
 	server := gin.Default()
+	server.Use(middlewares.CorsMiddleware())
 	server.Use(middlewares.ErrorMiddlewareHandler())
 	server.Use(middlewares.JWTAuthMiddleware())
 
