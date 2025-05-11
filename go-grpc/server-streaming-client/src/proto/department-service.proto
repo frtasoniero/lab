@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package department;
+
+option go_package = "./src/pb/department";
+
+message ListPersonRequest {
+    int32 departmentId = 1;
+}
+
+message ListPersonResponse {
+    int32 id = 1;
+    string name = 2;
+    string email = 3;
+    int32 income = 4;
+    int32 departmentId = 5;
+}
+
+service DepartmentService {
+    rpc ListPerson(ListPersonRequest) returns (stream ListPersonResponse);
+}
